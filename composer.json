@@ -1,0 +1,20 @@
+
+{
+    "name": "rsteiner/Shipwire-PHP-SDK",
+    "type": "library",
+    "description": "PHP SDK for Shipwire",
+    "keywords": ["shipwire","sdk", "php"],
+    "homepage": "https://github.com/rsteiner/Shipwire-PHP-SDK",
+    "license": "http://creativecommons.org/licenses/by-nc/3.0/ CC BY-NC",
+    "authors": [
+        {
+            "name": "Rob Steiner",
+            "email": "rob@charityroot.com",
+            "homepage": "http://charityroot.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
