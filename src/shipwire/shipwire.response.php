@@ -1,22 +1,26 @@
 <?php
 namespace CharityRoot;
-use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 
 class ShipwireResponse {
 
-    private $_status;
-    private $_message;
-    private $_count;
-    private $_endpoint;
-    private $_raw;
-    private $_resource;
+    protected $_status;
+    protected $_message;
+    protected $_count;
+    protected $_endpoint;
+    protected $_raw;
+    protected $_resource;
 
-    public function __construct(Response $response, $endpoint)
+    public function __construct(Response $guzzle_response, $endpoint)
     {
-        $this->_status = $response->getStatusCode();
         $this->_endpoint = $endpoint;
-        $this->_raw = $response->getBody()->getContents();
+
+        if ($guzzle_response === null) {
+            return;
+        }
+
+        $this->_status = $guzzle_response->getStatusCode();
+        $this->_raw = $guzzle_response->getBody()->getContents();
 
         if (!$this->_raw) {
             throw new ShipwireException('Response body content empty');
@@ -33,7 +37,7 @@ class ShipwireResponse {
         $this->_treatResource();
     }
 
-    public function get()
+    public function results()
     {
         return $this->_resource;
     }

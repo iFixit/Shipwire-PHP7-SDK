@@ -3,23 +3,32 @@ namespace CharityRoot;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 
-class ShipwireRequest {
-	private $_authcode;
-	private $_query;
-	private $_body;
-	private $_method;
-	private $_endpoint;
-	private $_request;
-	private $_response;
-
-    const GET = 'GET';
+class ShipwireRequest extends Client  {
+	
+	const GET = 'GET';
     const POST = 'POST';
     const PUT = 'PUT';
 
-	function __construct($authcode)
-	{
-		$this->_authcode = $authcode;
-	}
+	private $_authcode;
+	private $_query;
+	private $_body;
+	private $_method = self::GET;
+	private $_endpoint;
+	private $_request;
+	private $_response;
+    
+    static $api_version = 'v3';
+    static $environment = 'live';
+
+    private static $_base_url_sandbox = 'https://api.beta.shipwire.com';
+    private static $_base_url = 'https://api.shipwire.com';
+
+    function __construct($authcode, $sandbox = false)
+    {
+    	$this->_authcode = $authcode;
+		$this->_base_uri = $sandbox ? self::$_base_url_sandbox : self::$_base_url;
+        parent::__construct(['base_uri' => $this->_base_uri]);
+    }
 
 	public function setQuery(array $query)
 	{
@@ -46,11 +55,6 @@ class ShipwireRequest {
 	}
 
 	public function submit()
-	{
-		return $this->_request();
-	}
-
-    protected function _request()
     {
     	$this->_request = [
             'exceptions' => FALSE,
@@ -64,7 +68,6 @@ class ShipwireRequest {
         ];
 
         $this->_response = $this->request($this->_method, '/api/v3/' . $this->_endpoint, $this->_request);
-
         return new ShipwireResponse($this->_response, $this->_endpoint);
     }
 

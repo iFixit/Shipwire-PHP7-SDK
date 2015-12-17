@@ -1,9 +1,7 @@
 <?php
 namespace CharityRoot;
-use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
 
-class Shipwire extends Client {
+class Shipwire {
 
     const DefaultCurrency = 'USD';
 
@@ -14,24 +12,24 @@ class Shipwire extends Client {
     static $base_url = 'https://api.shipwire.com';
     static $api_version = 'v3';
 
-    public $auth_code;
+    private $_authcode;
+    private $_sandbox;
 
     function __construct($username, $password, $sandbox = false)
     {
-        parent::__construct(['base_uri' => $sandbox ? self::$base_url_sandbox : self::$base_url]);
-
-        $this->auth_code = base64_encode($username . ':' . $password);
+        $this->_sandbox = $sandbox;
+        $this->_authcode = base64_encode($username . ':' . $password);
     }
 
     public function stock(array $args = [])
     {
-        $response = $this->_request('stock');
+        $response = $this->_request('stock', $args);
         return $response;
     }
 
     public function products(array $args = [])
     {
-        $response = $this->_request('products');
+        $response = $this->_request('products', $args);
         return $response;
     }
 
@@ -61,25 +59,21 @@ class Shipwire extends Client {
 
     protected function _request($endpoint, array $query = [])
     {
-        $request = new ShipwireRequest();
-        $resonse = $request->
+        $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
+        return $request->
             setEndpoint($endpoint)->
             setQuery($query)->
             submit();
-
-        return new ShipwireResponse($response, $endpoint);
     }
 
     protected function _post($endpoint, array $body = [])
     {
-        $request = new ShipwireRequest();
-        $resonse = $request->
+        $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
+        return $request->
             setEndpoint($endpoint)->
             setbody($body)->
             setMethod(ShipwireRequest::POST)->
             submit();
-
-        return new ShipwireResponse($response, $endpoint);
     }
 
 }
