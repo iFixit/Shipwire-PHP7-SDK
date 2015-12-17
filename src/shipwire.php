@@ -3,11 +3,7 @@ namespace CharityRoot;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 
-class Shipwire extends Client{
-
-    const GET = 'GET';
-    const POST = 'POST';
-    const PUT = 'PUT';
+class Shipwire extends Client {
 
     const DefaultCurrency = 'USD';
 
@@ -41,9 +37,7 @@ class Shipwire extends Client{
 
     public function orders(array $args = [])
     {
-        //$args['expand'] = ShipwireOrder::ARG_EXPAND_ITEMS . ',' . ShipwireOrder::ARG_EXPAND_TRACKINGS;
         $response = $this->_request('orders', $args);
-
         return $response;
     }
 
@@ -67,39 +61,25 @@ class Shipwire extends Client{
 
     protected function _request($endpoint, array $query = [])
     {
-        $response = $this->request(self::GET, '/api/v3/' . $endpoint, [
-            'exceptions' => FALSE,
-            'headers' => [
-                'Accept' => 'application/json',
-                'Authorization' => 'Basic ' . $this->auth_code,
-                'User-Agent' => 'CharityRoot'
-            ],
-            'query' => $query,
-            'body' => null
-        ]);
+        $request = new ShipwireRequest();
+        $resonse = $request->
+            setEndpoint($endpoint)->
+            setQuery($query)->
+            submit();
 
         return new ShipwireResponse($response, $endpoint);
     }
 
-    protected function _post($endpoint, array $post = [])
+    protected function _post($endpoint, array $body = [])
     {
-        $response = $this->request(self::POST, '/api/v3/' . $endpoint, [
-            'exceptions' => FALSE,
-            'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => 'Basic ' . $this->auth_code,
-                    'User-Agent' => 'CharityRoot'
-                ],
-                'body' => json_encode($post)
-            ]);
+        $request = new ShipwireRequest();
+        $resonse = $request->
+            setEndpoint($endpoint)->
+            setbody($body)->
+            setMethod(ShipwireRequest::POST)->
+            submit();
 
-        $this->_last_post_body = json_encode($post);
         return new ShipwireResponse($response, $endpoint);
-    }
-
-    public function getLastPostBody()
-    {
-        return $this->_last_post_body;
     }
 
 }
