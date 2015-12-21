@@ -29,6 +29,7 @@ class ShipwireResponse {
         $array = $this->_jsonDecode($this->_raw);
         $this->_count = $array['resource']['total'];
         $this->_message = $array['message'];
+        $this->_errors = isset($array['errors']) ? new ShipwireErrors($array['errors'][0]) : new ShipwireErrors();
         if (!$array['resource']) {
             return;
         }
@@ -40,6 +41,11 @@ class ShipwireResponse {
     public function results()
     {
         return $this->_resource;
+    }
+
+    public function errors()
+    {
+        return $this->_errors;
     }
 
     protected function _jsonDecode($json)
