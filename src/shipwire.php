@@ -57,6 +57,17 @@ class Shipwire {
         return $response;
     }
 
+    public function getTrackingsByOrderNo($orderNo)
+    {
+        $response = $this->orders(['orderNo' => $orderNo, 'expand' => ShipwireOrder::ARG_EXPAND_TRACKINGS]);
+        $results = $response->results();
+        if ($results === null) {
+            return;
+        }
+
+        return $results->get('trackings');
+    }
+
     protected function _request($endpoint, array $query = [])
     {
         $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
