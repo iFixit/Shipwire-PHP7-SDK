@@ -10,6 +10,7 @@ class ShipwireResponse {
     protected $_endpoint;
     protected $_raw;
     protected $_resource;
+    protected $_http_status;
 
     public function __construct(Response $guzzle_response, $endpoint)
     {
@@ -29,6 +30,7 @@ class ShipwireResponse {
         $array = $this->_jsonDecode($this->_raw);
         $this->_count = $array['resource']['total'];
         $this->_message = $array['message'];
+        $this->_http_status = $array['status'];
         $this->_errors = isset($array['errors']) ? new ShipwireErrors($array['errors'][0]) : new ShipwireErrors();
         if (!$array['resource']) {
             return;
@@ -36,6 +38,11 @@ class ShipwireResponse {
 
         $this->_resource = new ShipwireResource($array['resource']);
         $this->_treatResource();
+    }
+
+    public function success()
+    {
+        return $this->_http_status == 200;
     }
 
     public function results()

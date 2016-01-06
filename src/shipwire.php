@@ -68,6 +68,16 @@ class Shipwire {
         return $results->get('trackings');
     }
 
+    public function api($endpoint, array $args = [], $method = ShipwireRequest::GET)
+    {
+        switch ($method) {
+            case ShipwireRequest::POST:
+                return $this->_post($endpoint, $args);
+            default:
+                return $this->_request($endpoint, $args);
+        }
+    }
+
     protected function _request($endpoint, array $query = [])
     {
         $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
