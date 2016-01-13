@@ -14,23 +14,26 @@ class ShipwireItem extends \ArrayObject {
         return $this->offsetGet($key);
     }
 
-    public function set($key, $value) {
+    public function set($key, $value): self
+    {
         $array = $this->getArray();
         $array[$key] = $value;
         $this->exchangeArray($array);
+        return $this;
     }
 
-    public function removeKey($key)
+    public function removeKey($key): self
     {
-        return $this->offsetUnset($key);
+        $this->offsetUnset($key);
+        return $this;
     }
 
-    public function getArray()
+    public function getArray(): array
     {
         return $this->getArrayCopy();
     }
 
-    public function getKeys()
+    public function getKeys(): array
     {
         $array = $this->get(0);
         if (!$array) {
@@ -38,10 +41,10 @@ class ShipwireItem extends \ArrayObject {
         }
 
         $array = $this->get(0)->getArray();
-        return array_keys($array );
+        return array_keys($array);
     }
 
-    public function prepend($data)
+    public function prepend($data): self
     {
         $array = $this->getArrayCopy();
         array_unshift($array, $data);
@@ -50,19 +53,9 @@ class ShipwireItem extends \ArrayObject {
         return $this;
     }
 
-
-    public function getJSON()
+    public function getJSON(): string
     {
         return json_encode($this->getArray());
-    }
-
-    public function __call($func, $argv)
-    {
-        if (!is_callable($func) || substr($func, 0, 6) !== 'array_') {
-            throw new ShipwireException(__CLASS__.'->'.$func);
-        }
-
-        return call_user_func_array($func, array_merge(array($this->getArrayCopy()), $argv));
     }
 
 }

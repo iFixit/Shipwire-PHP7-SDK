@@ -17,19 +17,19 @@ class ShipwireProduct extends ShipwireResource {
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    public function setValues(ShipwireProductValues $values)
+    public function setValues(ShipwireProductValues $values): self
     {
         $this->set('values', $values);
         return $this;
     }
 
-    public function setDimensions(ShipwireProductDimensions $dimensions)
+    public function setDimensions(ShipwireProductDimensions $dimensions): self
     {
         $this->set('dimensions', $dimensions);
         return $this;
     }
 
-    public function setFlags(ShipwireProductFlags $flags)
+    public function setFlags(ShipwireProductFlags $flags): self
     {
         $this->set('flags', $flags);
         return $this;

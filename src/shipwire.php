@@ -15,49 +15,49 @@ class Shipwire {
     private $_authcode;
     private $_sandbox;
 
-    function __construct($username, $password, $sandbox = false)
+    function __construct(string $username, string $password, bool $sandbox = false)
     {
         $this->_sandbox = $sandbox;
         $this->_authcode = base64_encode($username . ':' . $password);
     }
 
-    public function stock(array $args = [])
+    public function stock(array $args = []): ShipwireResponse
     {
         $response = $this->_request('stock', $args);
         return $response;
     }
 
-    public function products(array $args = [])
+    public function products(array $args = []): ShipwireResponse
     {
         $response = $this->_request('products', $args);
         return $response;
     }
 
-    public function orders(array $args = [])
+    public function orders(array $args = []): ShipwireResponse
     {
         $response = $this->_request('orders', $args);
         return $response;
     }
 
-    public function quote(ShipwireQuote $quote)
+    public function quote(ShipwireQuote $quote): ShipwireResponse
     {
         $response = $this->_post('rate', $quote->getBody());
         return $response;
     }
 
-    public function createOrder(ShipwireOrder $order)
+    public function createOrder(ShipwireOrder $order): ShipwireResponse
     {
         $response = $this->_post('orders', $order->getBody());
         return $response;
     }
 
-    public function createProduct(ShipwireProduct $product)
+    public function createProduct(ShipwireProduct $product): ShipwireResponse
     {
         $response = $this->_post('products', $product->getBody());
         return $response;
     }
 
-    public function getTrackingsByOrderNo($orderNo)
+    public function getTrackingsByOrderNo($orderNo): ShipwireItems
     {
         $response = $this->orders(['orderNo' => $orderNo, 'expand' => ShipwireOrder::ARG_EXPAND_TRACKINGS]);
         $results = $response->results();
@@ -68,7 +68,7 @@ class Shipwire {
         return $results->get('trackings');
     }
 
-    public function api($endpoint, array $args = [], $method = ShipwireRequest::GET)
+    public function api(string $endpoint, array $args = [], $method = ShipwireRequest::GET): ShipwireResponse
     {
         switch ($method) {
             case ShipwireRequest::POST:
@@ -78,7 +78,7 @@ class Shipwire {
         }
     }
 
-    protected function _request($endpoint, array $query = [])
+    protected function _request(string $endpoint, array $query = []): ShipwireResponse
     {
         $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
         return $request->
@@ -87,7 +87,7 @@ class Shipwire {
             submit();
     }
 
-    protected function _post($endpoint, array $body = [])
+    protected function _post(string $endpoint, array $body = []): ShipwireResponse
     {
         $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
         return $request->

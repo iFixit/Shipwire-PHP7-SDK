@@ -34,13 +34,13 @@ class ShipwireOrder extends ShipwireResource {
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    public function setOptions(ShipwireOptions $options)
+    public function setOptions(ShipwireOptions $options): self
     {
         $this->set('options', $options);
         return $this;
     }
 
-    public function addItem(ShipwireOrderItem $item)
+    public function addItem(ShipwireOrderItem $item): self
     {
         if (!$this->get('items')) {
             $this->set('items', new ShipwireItems());
@@ -56,25 +56,25 @@ class ShipwireOrder extends ShipwireResource {
         return $this;
     }
 
-    public function setToAddress(ShipwireAddress $address)
+    public function setToAddress(ShipwireAddress $address): self
     {
         $this->set('shipTo', $address);
         return $this;
     }
 
-    public function setFromAddress(ShipwireAddress $address)
+    public function setFromAddress(ShipwireAddress $address): self
     {
         $this->set('shipFrom', $address);
         return $this;
     }
 
-    public function setCommercialInvoice(ShipwireOrderCommercialInvoice $invoice)
+    public function setCommercialInvoice(ShipwireOrderCommercialInvoice $invoice): self
     {
         $this->set('commercialInvoice', $invoice);
         return $this;
     }
 
-    public function setPackingList(ShipwireOrderPackingList $packing_list)
+    public function setPackingList(ShipwireOrderPackingList $packing_list): self
     {
         $this->set('packingList', $packing_list);
         return $this;

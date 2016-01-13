@@ -26,4 +26,5 @@ class ShipwireRateShipment extends ShipwireResource {
 
         parent::__construct($input, $flags, $iterator_class);
     }
+
 }

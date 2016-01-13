@@ -29,31 +29,31 @@ class ShipwireRequest extends Client  {
         parent::__construct(['base_uri' => $this->_base_uri]);
     }
 
-    public function setQuery(array $query)
+    public function setQuery(array $query): self
     {
         $this->_query = $query;
         return $this;
     }
 
-    public function setBody($body = null)
+    public function setBody($body = null): self
     {
         $this->_body = $body;
         return $this;
     }
 
-    public function setMethod($method = self::GET)
+    public function setMethod($method = self::GET): self
     {
         $this->_method = $method;
         return $this;
     }
 
-    public function setEndpoint($endpoint)
+    public function setEndpoint($endpoint): self
     {
         $this->_endpoint = $endpoint;
         return $this;
     }
 
-    public function submit()
+    public function submit(): ShipwireResponse
     {
         $this->_request = [
             'exceptions' => FALSE,

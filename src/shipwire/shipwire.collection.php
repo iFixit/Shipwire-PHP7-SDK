@@ -8,7 +8,8 @@ class ShipwireCollection extends ShipwireItem {
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    public function sortOnKey($key, $order = self::DESC, $flag = SORT_REGULAR) {
+    public function sortOnKey($key, $order = self::DESC, $flag = SORT_REGULAR)
+    {
         $sort = [];
         $missing = [];
 
@@ -45,6 +46,7 @@ class ShipwireCollection extends ShipwireItem {
 
         $this->exchangeArray($sorted);
     }
+
     protected function _filterEquals($value, $actual, $index)
     {
         if ($value == $actual) {
@@ -132,17 +134,15 @@ class ShipwireCollection extends ShipwireItem {
         $this->current_page = $page;
     }
 
-    public function getCurrentPage()
+    public function getCurrentPage(): ShipwireItems
     {
-        $page = $this->get($this->current_page - 1);
-        if (!$page) {
-            return;
-        }
+        $page = $this->get($this->current_page - 1) ?: 1;
 
         return new ShipwireItems($page);
     }
 
-    protected static function _sanitizeKey($string = '') {
+    protected static function _sanitizeKey($string = ''): string
+    {
         $string = preg_replace('/[^\w\-]+/u', '-', $string);
         $r = mb_strtolower(preg_replace('/--+/u', '-', $string), 'UTF-8');
         $url = rtrim($r, '-');

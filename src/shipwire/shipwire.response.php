@@ -40,7 +40,7 @@ class ShipwireResponse {
         $this->_treatResource();
     }
 
-    public function success()
+    public function success(): bool
     {
         return $this->_http_status == 200;
     }
@@ -50,7 +50,7 @@ class ShipwireResponse {
         return $this->_resource;
     }
 
-    public function errors()
+    public function errors(): ShipwireErrors
     {
         return $this->_errors;
     }
@@ -65,27 +65,28 @@ class ShipwireResponse {
         throw new ShipwireException('Invalid JSON Response: ' . json_last_error());
     }
 
-    protected function _treatResource()
+    protected function _treatResource(): self
     {
         $method = '_treat' . ucwords($this->_endpoint) . 'Resource';
         if (method_exists($this, $method)) {
             $this->$method();
         }
 
+        return $this;
     }
 
-    protected function _treatStockResource()
+    protected function _treatStockResource(): self
     {
         $items = $this->_resource->get('items');
 
         if ($this->_count === 1) {
             $this->_resource = new ShipwireInventory($items[0]['resource']);
-            return;
+            return $this;
         }
 
         $replace = [];
         if (empty($items)) {
-            return;
+            return $this;
         }
 
         foreach ($items as $item) {
@@ -93,20 +94,21 @@ class ShipwireResponse {
         }
 
         $this->_resource->set('items', new ShipwireItems($replace));
+        return $this;
     }
 
-    protected function _treatProductsResource()
+    protected function _treatProductsResource(): self
     {
         $items = $this->_resource->get('items');
 
         if ($this->_count === 1) {
             $this->_resource = new ShipwireProduct($items[0]['resource']);
-            return;
+            return $this;
         }
 
         $replace = [];
         if (empty($items)) {
-            return;
+            return $this;
         }
 
         foreach ($items as $item) {
@@ -114,20 +116,21 @@ class ShipwireResponse {
         }
 
         $this->_resource->set('items', new ShipwireItems($replace));
+        return $this;
     }
 
-    protected function _treatOrdersResource()
+    protected function _treatOrdersResource(): self
     {
         $items = $this->_resource->get('items');
 
         if ($this->_count === 1) {
             $this->_resource = new ShipwireOrder($items[0]['resource']);
-            return;
+            return $this;
         }
 
         $replace = [];
         if (empty($items)) {
-            return;
+            return $this;
         }
 
         foreach ($items as $item) {
@@ -135,20 +138,21 @@ class ShipwireResponse {
         }
 
         $this->_resource->set('items', new ShipwireItems($replace));
+        return $this;
     }
 
-    protected function _treatRateResource()
+    protected function _treatRateResource(): self
     {
         $items = $this->_resource->get('rates');
         $items = $items[0]['serviceOptions'];
         if ($this->_count === 1) {
             $this->_resource = new ShipwireRate($items[0]['resource']);
-            return;
+            return $this;
         }
 
         $replace = [];
         if (empty($items)) {
-            return;
+            return $this;
         }
 
         foreach ($items as $item) {
@@ -156,6 +160,7 @@ class ShipwireResponse {
         }
 
         $this->_resource = new ShipwireRateItems($replace);
+        return $this;
     }
 
 }

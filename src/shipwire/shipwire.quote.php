@@ -12,13 +12,13 @@ class ShipwireQuote extends ShipwireResource {
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    public function setOptions(ShipwireOptions $options)
+    public function setOptions(ShipwireOptions $options): self
     {
         $this->_options = $options;
         return $this;
     }
 
-    public function setItems(ShipwireItems $items)
+    public function setItems(ShipwireItems $items): self
     {
         $this->_order = $this->_order ?: new ShipwireOrder();
 
@@ -27,7 +27,7 @@ class ShipwireQuote extends ShipwireResource {
         return $this;
     }
 
-    public function addItem(ShipwireQuoteItem $item)
+    public function addItem(ShipwireQuoteItem $item): self
     {
         $this->_order = $this->_order ?: new ShipwireOrder;
         $this->_order['_items'] = $this->_order['_items'] ?: new ShipwireItems();
@@ -36,7 +36,7 @@ class ShipwireQuote extends ShipwireResource {
         return $this;
     }
 
-    public function setAddress(ShipwireAddress $address)
+    public function setAddress(ShipwireAddress $address): self
     {
         $this->_order = $this->_order ?: new ShipwireOrder;
 
