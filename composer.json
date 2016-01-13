@@ -1,10 +1,10 @@
 
 {
-    "name": "rsteiner/Shipwire-PHP-SDK",
+    "name": "charityroot/Shipwire-PHP7-SDK",
     "type": "library",
-    "description": "PHP SDK for Shipwire",
+    "description": "PHP 7 SDK for Shipwire",
     "keywords": ["shipwire","sdk", "php"],
-    "homepage": "https://github.com/rsteiner/Shipwire-PHP-SDK",
+    "homepage": "https://github.com/charityroot/Shipwire-PHP7-SDK",
     "license": "http://creativecommons.org/licenses/by-nc/3.0/ CC BY-NC",
     "authors": [
         {
@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=7.*"
     },
     "autoload": {
         "classmap": [
