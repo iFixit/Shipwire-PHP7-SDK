@@ -31,7 +31,7 @@ class ShipwireResponse {
         $this->_count = $array['resource']['total'];
         $this->_message = $array['message'];
         $this->_http_status = $array['status'];
-        $this->_errors = isset($array['errors']) ? new ShipwireErrors($array['errors'][0]) : new ShipwireErrors();
+        $this->_errors = isset($array['errors']) ? new ShipwireErrors($array['errors']) : new ShipwireErrors();
         if (!$array['resource']) {
             return;
         }
