@@ -57,7 +57,7 @@ class Shipwire {
         return $response;
     }
 
-    public function getTrackingsByOrderNo($orderNo): ShipwireItems
+    public function getTrackingsByOrderNo($orderNo)
     {
         $response = $this->orders(['orderNo' => $orderNo, 'expand' => ShipwireOrder::ARG_EXPAND_TRACKINGS]);
         $results = $response->results();
