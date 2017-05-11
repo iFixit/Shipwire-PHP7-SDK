@@ -68,6 +68,66 @@ class Shipwire {
         return $results->get('trackings');
     }
 
+    public function webhooks(): ShipwireItems
+    {
+       $response = $this->api('webhooks');
+
+       if (!$response->success()) {
+          return new ShipwireWebhook($response->message());
+       }
+
+       $webhooks = array_map(function($item) {
+            return new ShipwireWebhook($item['resource']);
+       }, $response->results()->get('items'));
+       return new ShipwireItems($webhooks);
+    }
+
+    public function webhook(int $id): ShipwireWebhook
+    {
+      $response = $this->_request("webhooks/$id");
+
+      if (!$response->success()) {
+         throw new ShipwireException($response->message());
+      }
+
+      $results = $response->results();
+      return new ShipwireWebhook($results->getArray());
+    }
+
+    public function createWebhook(ShipwireWebhook $webhook): ShipwireWebhook
+    {
+      $response = $this->api('webhooks', $webhook->getBody(), ShipwireRequest::POST);
+
+      if (!$response->success()) {
+         throw new ShipwireException($response->message());
+      }
+
+      $resource = $response->results()->get('items')[0]['resource'];
+      return new ShipwireWebhook($resource);
+    }
+
+    public function updateWebhook(ShipwireWebhook $webhook): ShipwireWebhook
+    {
+      $id = $webhook->get('id');
+      $response = $this->api("webhooks/$id", $webhook->getBody(), ShipwireRequest::PUT);
+
+      if (!$response->success()) {
+         throw new ShipwireException($response->message());
+      }
+
+      $results = $response->results();
+      return new ShipwireWebhook($results->getArray());
+    }
+
+    public function deleteWebhook(int $id): void
+    {
+      $response = $this->api("webhooks/$id", [], ShipwireRequest::DELETE);
+
+      if (!$response->success()) {
+         throw new ShipwireException($response->message());
+      }
+    }
+
     public function api(string $endpoint, array $args = [], $method = ShipwireRequest::GET): ShipwireResponse
     {
         switch ($method) {
