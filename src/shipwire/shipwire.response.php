@@ -28,11 +28,11 @@ class ShipwireResponse {
         }
 
         $array = $this->_jsonDecode($this->_raw);
-        $this->_count = $array['resource']['total'];
+        $this->_count = $array['resource']['total'] ?? 1;
         $this->_message = $array['message'];
         $this->_http_status = $array['status'];
         $this->_errors = isset($array['errors']) ? new ShipwireErrors($array['errors']) : new ShipwireErrors();
-        if (!$array['resource']) {
+        if (!isset($array['resource'])) {
             return;
         }
 
@@ -43,6 +43,11 @@ class ShipwireResponse {
     public function success(): bool
     {
         return $this->_http_status == 200;
+    }
+
+    public function message()
+    {
+       return $this->_message;
     }
 
     public function results()
