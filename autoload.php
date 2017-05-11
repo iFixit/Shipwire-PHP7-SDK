@@ -23,6 +23,7 @@ $classes = [
    'CharityRoot\\ShipwireResource' => '/src/shipwire/shipwire.resource.php',
    'CharityRoot\\ShipwireResponse' => '/src/shipwire/shipwire.response.php',
    'CharityRoot\\ShipwireTracking' => '/src/shipwire/shipwire.tracking.php',
+   'CharityRoot\\ShipwireWebhook' => '/src/shipwire/shipwire.webhook.php',
 ];
 
 spl_autoload_register(
