@@ -73,6 +73,10 @@ class Shipwire {
         switch ($method) {
             case ShipwireRequest::POST:
                 return $this->_post($endpoint, $args);
+            case ShipwireRequest::PUT:
+                return $this->_put($endpoint, $args);
+            case ShipwireRequest::DELETE:
+                return $this->_delete($endpoint, $args);
             default:
                 return $this->_request($endpoint, $args);
         }
@@ -97,4 +101,23 @@ class Shipwire {
             submit();
     }
 
+    protected function _put(string $endpoint, array $body = []): ShipwireResponse
+    {
+        $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
+        return $request->
+            setEndpoint($endpoint)->
+            setbody($body)->
+            setMethod(ShipwireRequest::PUT)->
+            submit();
+    }
+
+    protected function _delete(string $endpoint, array $body = []): ShipwireResponse
+    {
+        $request = new ShipwireRequest($this->_authcode, $this->_sandbox);
+        return $request->
+            setEndpoint($endpoint)->
+            setbody($body)->
+            setMethod(ShipwireRequest::DELETE)->
+            submit();
+    }
 }

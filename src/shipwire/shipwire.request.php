@@ -7,6 +7,7 @@ class ShipwireRequest extends Client  {
     const GET = 'GET';
     const POST = 'POST';
     const PUT = 'PUT';
+    const DELETE = 'DELETE';
 
     private $_authcode;
     private $_query;
