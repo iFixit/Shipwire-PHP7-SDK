@@ -22,6 +22,11 @@ class ShipwireItem extends \ArrayObject {
         return $this;
     }
 
+    public function exists($key): bool
+    {
+       return $this->offsetExists($key);
+    }
+
     public function removeKey($key): self
     {
         $this->offsetUnset($key);
