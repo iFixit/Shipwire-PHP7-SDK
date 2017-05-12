@@ -32,11 +32,13 @@ class ShipwireResponse {
         $this->_message = $array['message'];
         $this->_http_status = $array['status'];
         $this->_errors = isset($array['errors']) ? new ShipwireErrors($array['errors']) : new ShipwireErrors();
+
         if (!isset($array['resource'])) {
-            return;
+           $this->_resource = new ShipwireResource();
+        } else {
+           $this->_resource = new ShipwireResource($array['resource']);
         }
 
-        $this->_resource = new ShipwireResource($array['resource']);
         $this->_treatResource();
     }
 
