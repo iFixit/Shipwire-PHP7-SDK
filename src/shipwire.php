@@ -21,82 +21,71 @@ class Shipwire {
         $this->_authcode = base64_encode($username . ':' . $password);
     }
 
-    public function stock(array $args = []): ShipwireResponse
+    public function stock(array $args = []): ShipwireResource
     {
-        $response = $this->api('stock', $args);
-        return $response;
+        return $this->api('stock', $args);
     }
 
-    public function products(array $args = []): ShipwireResponse
+    public function products(array $args = []): ShipwireResource
     {
-        $response = $this->api('products', $args);
-        return $response;
+        return $this->api('products', $args);
     }
 
-    public function orders(array $args = []): ShipwireResponse
+    public function orders(array $args = []): ShipwireResource
     {
-        $response = $this->api('orders', $args);
-        return $response;
+        return $this->api('orders', $args);
     }
 
-    public function quote(ShipwireQuote $quote): ShipwireResponse
+    public function quote(ShipwireQuote $quote): ShipwireResource
     {
-        $response = $this->api('rate', $quote->getBody(), ShipmentRequest::POST);
-        return $response;
+        return $this->api('rate', $quote->getBody(), ShipmentRequest::POST);
     }
 
-    public function createOrder(ShipwireOrder $order): ShipwireResponse
+    public function createOrder(ShipwireOrder $order): ShipwireResource
     {
-        $response = $this->api('orders', $order->getBody(), ShipmentRequest::POST);
-        return $response;
+        return $this->api('orders', $order->getBody(), ShipmentRequest::POST);
     }
 
-    public function createProduct(ShipwireProduct $product): ShipwireResponse
+    public function createProduct(ShipwireProduct $product): ShipwireResource
     {
-        $response = $this->api('products', $product->getBody(), ShipmentRequest::POST);
-        return $response;
+        return $this->api('products', $product->getBody(), ShipmentRequest::POST);
     }
 
     public function getTrackingsByOrderNo($orderNo): ShipwireItems
     {
-        $response = $this->orders(['orderNo' => $orderNo, 'expand' => ShipwireOrder::ARG_EXPAND_TRACKINGS]);
-        $results = $response->results();
-
+        $results = $this->orders(['orderNo' => $orderNo, 'expand' => ShipwireOrder::ARG_EXPAND_TRACKINGS]);
         return $results->get('trackings');
     }
 
     public function webhooks(): ShipwireItems
     {
-       $response = $this->api('webhooks');
-
+       $results = $this->api('webhooks');
        $webhooks = array_map(function($item) {
             return new ShipwireWebhook($item['resource']);
-       }, $response->results()->get('items'));
+       }, $results->get('items'));
+
        return new ShipwireItems($webhooks);
     }
 
     public function webhook(int $id): ShipwireWebhook
     {
-      $response = $this->api("webhooks/$id");
-
-      $results = $response->results();
+      $results = $this->api("webhooks/$id");
       return new ShipwireWebhook($results->getArray());
     }
 
     public function createWebhook(ShipwireWebhook $webhook): ShipwireWebhook
     {
-      $response = $this->api('webhooks', $webhook->getBody(), ShipwireRequest::POST);
+      $results = $this->api('webhooks', $webhook->getBody(), ShipwireRequest::POST);
+      $resource = $results->get('items')[0]['resource'];
 
-      $resource = $response->results()->get('items')[0]['resource'];
       return new ShipwireWebhook($resource);
     }
 
     public function updateWebhook(ShipwireWebhook $webhook): ShipwireWebhook
     {
       $id = $webhook->get('id');
-      $response = $this->api("webhooks/$id", $webhook->getBody(), ShipwireRequest::PUT);
+      $results = $this->api("webhooks/$id", $webhook->getBody(), ShipwireRequest::PUT);
 
-      $results = $response->results();
       return new ShipwireWebhook($results->getArray());
     }
 
@@ -105,7 +94,7 @@ class Shipwire {
       $this->api("webhooks/$id", [], ShipwireRequest::DELETE);
     }
 
-    public function api(string $endpoint, array $args = [], $method = ShipwireRequest::GET): ShipwireResponse
+    public function api(string $endpoint, array $args = [], $method = ShipwireRequest::GET): ShipwireResource
     {
         switch ($method) {
             case ShipwireRequest::POST:
@@ -125,7 +114,7 @@ class Shipwire {
            throw new ShipwireException($response->message());
         }
 
-        return $response;
+        return $response->results();
     }
 
     protected function _request(string $endpoint, array $query = []): ShipwireResponse
