@@ -77,7 +77,7 @@ class Shipwire {
 
     public function webhook(int $id): ShipwireWebhook
     {
-      $response = $this->_request("webhooks/$id");
+      $response = $this->api("webhooks/$id");
 
       $results = $response->results();
       return new ShipwireWebhook($results->getArray());
