@@ -94,6 +94,33 @@ class Shipwire {
       $this->api("webhooks/$id", [], ShipwireRequest::DELETE);
     }
 
+    public function secrets(): ShipwireItems
+    {
+      $results = $this->api('secret');
+      $secrets = array_map(function($item) {
+         return new ShipwireWebhookSecret($item['resource']);
+      }, $results->get('items'));
+
+      return new ShipwireItems($secrets);
+    }
+
+    public function secret(int $id): ShipwireWebhookSecret
+    {
+      $results = $this->api("secret/$id");
+      return new ShipwireWebhookSecret($results->getArray());
+    }
+
+    public function createSecret(): ShipwireWebhookSecret
+    {
+       $results = $this->api("secret", [], ShipwireRequest::POST);
+       return new ShipwireWebhookSecret($results->getArray());
+    }
+
+    public function deleteSecret(int $id): void
+    {
+      $this->api("secret/$id", [], ShipwireRequest::DELETE);
+    }
+
     public function api(string $endpoint, array $args = [], $method = ShipwireRequest::GET): ShipwireResource
     {
         switch ($method) {
