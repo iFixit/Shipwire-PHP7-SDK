@@ -23,47 +23,44 @@ class Shipwire {
 
     public function stock(array $args = []): ShipwireResponse
     {
-        $response = $this->_request('stock', $args);
+        $response = $this->api('stock', $args);
         return $response;
     }
 
     public function products(array $args = []): ShipwireResponse
     {
-        $response = $this->_request('products', $args);
+        $response = $this->api('products', $args);
         return $response;
     }
 
     public function orders(array $args = []): ShipwireResponse
     {
-        $response = $this->_request('orders', $args);
+        $response = $this->api('orders', $args);
         return $response;
     }
 
     public function quote(ShipwireQuote $quote): ShipwireResponse
     {
-        $response = $this->_post('rate', $quote->getBody());
+        $response = $this->api('rate', $quote->getBody(), ShipmentRequest::POST);
         return $response;
     }
 
     public function createOrder(ShipwireOrder $order): ShipwireResponse
     {
-        $response = $this->_post('orders', $order->getBody());
+        $response = $this->api('orders', $order->getBody(), ShipmentRequest::POST);
         return $response;
     }
 
     public function createProduct(ShipwireProduct $product): ShipwireResponse
     {
-        $response = $this->_post('products', $product->getBody());
+        $response = $this->api('products', $product->getBody(), ShipmentRequest::POST);
         return $response;
     }
 
-    public function getTrackingsByOrderNo($orderNo)
+    public function getTrackingsByOrderNo($orderNo): ShipwireItems
     {
         $response = $this->orders(['orderNo' => $orderNo, 'expand' => ShipwireOrder::ARG_EXPAND_TRACKINGS]);
         $results = $response->results();
-        if ($results === null) {
-            return;
-        }
 
         return $results->get('trackings');
     }
@@ -71,10 +68,6 @@ class Shipwire {
     public function webhooks(): ShipwireItems
     {
        $response = $this->api('webhooks');
-
-       if (!$response->success()) {
-          return new ShipwireWebhook($response->message());
-       }
 
        $webhooks = array_map(function($item) {
             return new ShipwireWebhook($item['resource']);
@@ -86,10 +79,6 @@ class Shipwire {
     {
       $response = $this->_request("webhooks/$id");
 
-      if (!$response->success()) {
-         throw new ShipwireException($response->message());
-      }
-
       $results = $response->results();
       return new ShipwireWebhook($results->getArray());
     }
@@ -97,10 +86,6 @@ class Shipwire {
     public function createWebhook(ShipwireWebhook $webhook): ShipwireWebhook
     {
       $response = $this->api('webhooks', $webhook->getBody(), ShipwireRequest::POST);
-
-      if (!$response->success()) {
-         throw new ShipwireException($response->message());
-      }
 
       $resource = $response->results()->get('items')[0]['resource'];
       return new ShipwireWebhook($resource);
@@ -111,35 +96,36 @@ class Shipwire {
       $id = $webhook->get('id');
       $response = $this->api("webhooks/$id", $webhook->getBody(), ShipwireRequest::PUT);
 
-      if (!$response->success()) {
-         throw new ShipwireException($response->message());
-      }
-
       $results = $response->results();
       return new ShipwireWebhook($results->getArray());
     }
 
     public function deleteWebhook(int $id): void
     {
-      $response = $this->api("webhooks/$id", [], ShipwireRequest::DELETE);
-
-      if (!$response->success()) {
-         throw new ShipwireException($response->message());
-      }
+      $this->api("webhooks/$id", [], ShipwireRequest::DELETE);
     }
 
     public function api(string $endpoint, array $args = [], $method = ShipwireRequest::GET): ShipwireResponse
     {
         switch ($method) {
             case ShipwireRequest::POST:
-                return $this->_post($endpoint, $args);
+                $response = $this->_post($endpoint, $args);
+                break;
             case ShipwireRequest::PUT:
-                return $this->_put($endpoint, $args);
+                $response = $this->_put($endpoint, $args);
+                break;
             case ShipwireRequest::DELETE:
-                return $this->_delete($endpoint, $args);
+                $response = $this->_delete($endpoint, $args);
+                break;
             default:
-                return $this->_request($endpoint, $args);
+                $response = $this->_request($endpoint, $args);
         }
+
+        if (!$response->success()) {
+           throw new ShipwireException($response->message());
+        }
+
+        return $response;
     }
 
     protected function _request(string $endpoint, array $query = []): ShipwireResponse
