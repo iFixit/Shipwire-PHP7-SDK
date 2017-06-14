@@ -24,12 +24,12 @@ class ShipwireOrder extends ShipwireResource {
         }
         $input['items'] = new ShipwireItems($replace_items);
 
-        $replace_items = [];
-        foreach ($input['trackings']['resource']['items'] as $order_item) {
-            $replace_items[] = new ShipwireTracking($order_item['resource']);
+        $replace_trackings = [];
+        foreach ($input['trackings']['resource']['items'] as $order_tracking) {
+            $replace_trackings[] = new ShipwireTracking($order_item['resource']);
         }
 
-        $input['trackings'] = new ShipwireItems($replace_items);
+        $input['trackings'] = new ShipwireItems($replace_trackings);
 
         parent::__construct($input, $flags, $iterator_class);
     }
@@ -46,12 +46,7 @@ class ShipwireOrder extends ShipwireResource {
             $this->set('items', new ShipwireItems());
         }
 
-        $_filtered = [
-            'sku' => strval($item['sku']),
-            'quantity' => intval($item['quantity'])
-        ];
-
-        $this->get('items')->append($_filtered);
+        $this->get('items')->append($item);
 
         return $this;
     }
