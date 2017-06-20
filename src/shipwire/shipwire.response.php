@@ -38,8 +38,6 @@ class ShipwireResponse {
         } else {
            $this->_resource = new ShipwireResource($array['resource']);
         }
-
-        $this->_treatResource();
     }
 
     public function success(): bool
@@ -82,72 +80,6 @@ class ShipwireResponse {
         return $this;
     }
 
-    protected function _treatStockResource(): self
-    {
-        $items = $this->_resource->get('items');
-
-        if ($this->_count === 1) {
-            $this->_resource = new ShipwireInventory($items[0]['resource']);
-            return $this;
-        }
-
-        $replace = [];
-        if (empty($items)) {
-            return $this;
-        }
-
-        foreach ($items as $item) {
-            $replace[] = new ShipwireInventory($item['resource']);
-        }
-
-        $this->_resource->set('items', new ShipwireItems($replace));
-        return $this;
-    }
-
-    protected function _treatProductsResource(): self
-    {
-        $items = $this->_resource->get('items');
-
-        if ($this->_count === 1) {
-            $this->_resource = new ShipwireProduct($items[0]['resource']);
-            return $this;
-        }
-
-        $replace = [];
-        if (empty($items)) {
-            return $this;
-        }
-
-        foreach ($items as $item) {
-            $replace[] = new ShipwireProduct($item['resource']);
-        }
-
-        $this->_resource->set('items', new ShipwireItems($replace));
-        return $this;
-    }
-
-    protected function _treatOrdersResource(): self
-    {
-        $items = $this->_resource->get('items');
-
-        if ($this->_count === 1) {
-            $this->_resource = new ShipwireOrder($items[0]['resource']);
-            return $this;
-        }
-
-        $replace = [];
-        if (empty($items)) {
-            return $this;
-        }
-
-        foreach ($items as $item) {
-            $replace[] = new ShipwireOrder($item['resource']);
-        }
-
-        $this->_resource->set('items', new ShipwireItems($replace));
-        return $this;
-    }
-
     protected function _treatRateResource(): self
     {
         $items = $this->_resource->get('rates');
@@ -169,5 +101,4 @@ class ShipwireResponse {
         $this->_resource = new ShipwireRateItems($replace);
         return $this;
     }
-
 }

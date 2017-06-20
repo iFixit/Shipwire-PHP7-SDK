@@ -21,24 +21,62 @@ class Shipwire {
         $this->_authcode = base64_encode($username . ':' . $password);
     }
 
-    public function stock(array $args = []): ShipwireResource
+    public function stock(array $args = []): ShipwireItems
     {
-        return $this->api('stock', $args);
+        $resource = $this->api('stock', $args);
+
+        $stock = array_map(function($item) {
+            return new ShipwireInventory($item['resource']);
+        }, $resource->get('items'));
+
+        return new ShipwireItems($stock);
     }
 
-    public function products(array $args = []): ShipwireResource
+    public function products(array $args = []): ShipwireItems
     {
-        return $this->api('products', $args);
+        $resource = $this->api('products', $args);
+
+        $products = array_map(function($item) {
+            return new ShipwireProduct($item['resource']);
+        }, $resource->get('items'));
+
+        return new ShipwireItems($products);
     }
 
-    public function orders(array $args = []): ShipwireResource
+    public function orders(array $args = []): ShipwireItems
     {
-        return $this->api('orders', $args);
+        $resource = $this->api('orders', $args);
+
+        $orders = array_map(function($item) {
+            return new ShipwireOrder($item['resource']);
+        }, $resource->get('items'));
+
+        return new ShipwireItems($orders);
     }
 
-    public function quote(ShipwireQuote $quote): ShipwireResource
+    public function order(string $orderNo): ShipwireOrder
     {
-        return $this->api('rate', $quote->getBody(), ShipmentRequest::POST);
+      $resource = $this->orders(['orderNo' => $orderNo, 'expand' => ShipwireOrder::ARG_EXPAND_ALL]);
+      $orders = $resource->get('items');
+
+      $order = reset($orders);
+
+      if ($order) {
+         return new ShipwireOrder($order);
+      } else {
+         return new ShipwireOrder();
+      }
+    }
+
+    public function quote(ShipwireQuote $quote): ShipwireRateItems
+    {
+        $resource =  $this->api('rate', $quote->getBody(), ShipmentRequest::POST);
+
+        $rates = array_map(function($rate) {
+            return new ShipwireRate($item['resource']);
+        }, $resource->get('rates'));
+
+        return new ShipwireRateItems($rates);
     }
 
     public function createOrder(ShipwireOrder $order): ShipwireResource
