@@ -26,7 +26,7 @@ class ShipwireOrder extends ShipwireResource {
 
         $replace_trackings = [];
         foreach ($input['trackings']['resource']['items'] as $order_tracking) {
-            $replace_trackings[] = new ShipwireTracking($order_item['resource']);
+            $replace_trackings[] = new ShipwireTracking($order_tracking['resource']);
         }
 
         $input['trackings'] = new ShipwireItems($replace_trackings);
