@@ -43,15 +43,25 @@ class Shipwire {
         return new ShipwireItems($products);
     }
 
-    public function orders(array $args = []): ShipwireItems
+    public function orders(array $args = []): \Iterator
     {
         $resource = $this->api('orders', $args);
 
-        $orders = array_map(function($item) {
-            return new ShipwireOrder($item['resource']);
-        }, $resource->get('items'));
+        foreach ($resource->get('items') as $item) {
+           yield new ShipwireOrder($item['resource']);
+        }
 
-        return new ShipwireItems($orders);
+        while ($resource['next']) {
+           $queryStr = parse_url($resource['next'], PHP_URL_QUERY);
+           parse_str($queryStr, $params);
+           $args['offset'] = $params['offset'];
+
+           $resource = $this->api('orders', $args);
+
+           foreach ($resource->get('items') as $item) {
+              yield new ShipwireOrder($item['resource']);
+           }
+        }
     }
 
     public function order(string $orderNo): ShipwireOrder
