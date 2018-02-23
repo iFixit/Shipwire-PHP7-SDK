@@ -21,15 +21,16 @@ class Shipwire {
         $this->_authcode = base64_encode($username . ':' . $password);
     }
 
-    public function stock(array $args = []): ShipwireItems
+    public function stock(array $args = []): \Iterator
     {
-        $resource = $this->api('stock', $args);
+        $stockApi = function(array $args) {
+          return $this->api('stock', $args);
+        };
+        $getAllStock = $this->makePaginated($stockApi);
 
-        $stock = array_map(function($item) {
-            return new ShipwireInventory($item['resource']);
-        }, $resource->get('items'));
-
-        return new ShipwireItems($stock);
+        foreach ($getAllStock($args) as $stock) {
+          yield new ShipwireInventory($stock);
+        }
     }
 
     public function products(array $args = []): ShipwireItems
@@ -45,22 +46,13 @@ class Shipwire {
 
     public function orders(array $args = []): \Iterator
     {
-        $resource = $this->api('orders', $args);
+        $ordersApi = function(array $args) {
+          return $this->api('orders', $args);
+        };
+        $getAllOrders = $this->makePaginated($ordersApi);
 
-        foreach ($resource->get('items') as $item) {
-           yield new ShipwireOrder($item['resource']);
-        }
-
-        while ($resource['next']) {
-           $queryStr = parse_url($resource['next'], PHP_URL_QUERY);
-           parse_str($queryStr, $params);
-           $args['offset'] = $params['offset'];
-
-           $resource = $this->api('orders', $args);
-
-           foreach ($resource->get('items') as $item) {
-              yield new ShipwireOrder($item['resource']);
-           }
+        foreach ($getAllOrders($args) as $order) {
+          yield new ShipwireOrder($order);
         }
     }
 
@@ -229,5 +221,33 @@ class Shipwire {
             setbody($body)->
             setMethod(ShipwireRequest::DELETE)->
             submit();
+    }
+
+    /**
+     * Consumes a function that gets shipwire resources and produces a function
+     * a function that paginates through all pages of the API response.
+     *
+     * This returned function lazily grabs more data from the API as needed, so
+     * you can grab arbitrarily large amounts of resources.
+     */
+    protected function makePaginated(callable $fn): callable
+    {
+        $paginationRunner = function(array $args) use ($fn): \Iterator {
+            do {
+              $resource = $fn($args);
+
+              foreach ($resource->get('items') as $item) {
+                yield $item['resource'];
+              }
+
+              if ($resource['next']) {
+                $queryStr = parse_url($resource['next'], PHP_URL_QUERY);
+                parse_str($queryStr, $params);
+                $args['offset'] = $params['offset'];
+              }
+            } while ($resource['next']);
+        };
+
+        return $paginationRunner;
     }
 }
